@@ -3,7 +3,6 @@ net.sf.jsqlparser.expression
 net.sf.jsqlparser.expression.operators.arithmetic
 net.sf.jsqlparser.expression.operators.conditional
 net.sf.jsqlparser.expression.operators.relational
-net.sf.jsqlparser.parser
 net.sf.jsqlparser.schema
 net.sf.jsqlparser.statement
 net.sf.jsqlparser.statement.create.table

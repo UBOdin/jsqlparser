@@ -65,7 +65,8 @@ public class Replace implements Statement {
 
 	/**
 	 * An {@link ItemsList} (either from a "REPLACE mytab VALUES (exp1,exp2)" or a "REPLACE mytab SELECT * FROM mytab2")  
-	 * it is null in case of a "REPLACE mytab SET col1=exp1, col2=exp2"  
+	 * it is null in case of a "REPLACE mytab SET col1=exp1, col2=exp2"
+	 * @return The target relation
 	 */
 	public ItemsList getItemsList() {
 		return itemsList;
@@ -83,6 +84,7 @@ public class Replace implements Statement {
 	/**
 	 * A list of {@link net.sf.jsqlparser.expression.Expression}s (from a "REPLACE mytab SET col1=exp1, col2=exp2"). <br>
 	 * it is null in case of a "REPLACE mytab (col1, col2) [...]"  
+	 * @return The replacement expressions
 	 */
 	public List<Expression> getExpressions() {
 		return expressions;

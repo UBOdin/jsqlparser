@@ -15,8 +15,10 @@ public class ColumnDefinition {
 	private List<String> columnSpecStrings;
 	
 	/**
-	 * A list of strings of every word after the datatype of the column.<br>
+	 * A list of strings of every word after the datatype of the column.
 	 * Example ("NOT", "NULL")
+	 *
+	 * @return A list of the datatype strings
 	 */
 	public List<String> getColumnSpecStrings() {
 		return columnSpecStrings;
@@ -28,6 +30,8 @@ public class ColumnDefinition {
 
 	/**
 	 * The {@link ColDataType} of this column definition 
+	 * 
+	 * @return The datatype
 	 */
 	public ColDataType getColDataType() {
 		return colDataType;

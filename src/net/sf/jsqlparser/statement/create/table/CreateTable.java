@@ -23,6 +23,8 @@ public class CreateTable implements Statement {
 
     /**
      * The name of the table to be created
+     *
+     * @return The {@link Table} identifier for the table being created.
      */
     public Table getTable() {
         return table;
@@ -34,6 +36,8 @@ public class CreateTable implements Statement {
 
     /**
      * A list of {@link ColumnDefinition}s of this table.
+     *
+     * @return The column definitions.
      */
     public List<ColumnDefinition> getColumnDefinitions() {
         return columnDefinitions;
@@ -45,6 +49,8 @@ public class CreateTable implements Statement {
 
     /**
      * A list of options (as simple strings) of this table definition, as ("TYPE", "=", "MYISAM") 
+     *
+     * @return The table options as simple strings
      */
     public List<String> getTableOptionsStrings() {
         return tableOptionsStrings;
@@ -57,6 +63,8 @@ public class CreateTable implements Statement {
     /**
      * A list of {@link Index}es (for example "PRIMARY KEY") of this table.<br>
      * Indexes created with column definitions (as in mycol INT PRIMARY KEY) are not inserted into this list.  
+     *
+     * @return A list of indexes
      */
     public List<Index> getIndexes() {
         return indexes;

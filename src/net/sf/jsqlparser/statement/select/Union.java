@@ -69,6 +69,7 @@ public class Union implements SelectBody {
 	
 	/**
 	 * This is not 100% right; every UNION should have their own All/Distinct clause...
+	 * @return true if this union is a UNION ALL
 	 */
 	public boolean isAll() {
 		return all;
@@ -80,6 +81,7 @@ public class Union implements SelectBody {
 
 	/**
 	 * This is not 100% right; every UNION should have their own All/Distinct clause...
+	 * @return true if this union is a UNION DISTINCT
 	 */
 	public boolean isDistinct() {
 		return distinct;

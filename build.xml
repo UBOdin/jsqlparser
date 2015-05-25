@@ -13,7 +13,6 @@
       <property name="junit.jar"            value="./lib/junit.jar"/>
       <property name="parser.dir"            value="${src.dir}/net/sf/jsqlparser/parser"/>
       <property name="jar.file"              value="jsqlparser"/>
-      <property name="docjar.file.name"      value="${jar.file}-doc.jar"/>
       <property name="binjar.file.name"      value="${jar.file}.jar"/>
   
 	<path id="project.class.path">
@@ -77,21 +76,12 @@
 		</junit>
       </target>
   
-      <target name="binjar">
+      <target name="jar">
 	     <delete file="${binjar.file.name}"  />
 		 <jar destfile="${binjar.file.name}" > 
 		 	<fileset dir="./classes"/>
 		 </jar>
       </target>
-
-      <target name="docjar">
-	     <delete file="${jar.file.name}"  />
-		 <jar destfile="${jar.file.name}" 
-		 		basedir="./../" 
-		 	    includes="jsqlparser/docs/**,jsqlparser/src/**,jsqlparser/testsrc/**,jsqlparser/testfiles/**,jsqlparser/lib/**,jsqlparser/build.xml,jsqlparser/change.log" excludes="**/cvs/*,**/cvs"/> 
-      </target>
-
-      <target name="jar" depends="binjar,docjar"></target>
   
      <target name="javadoc">
         <javadoc destdir="docs" access="private" use="true" source="1.5"
@@ -99,10 +89,16 @@
             splitindex="true" author="true" version="true" 
             nodeprecatedlist="false" nodeprecated="false"
             packagenames="net.sf.jsqlparser.*"
-            sourcepath="src"
-            classpath="testclasses;classes;./testlib/junit.jar" additionalparam="-tag to.do:a:&quot;To Do:&quot;"/>
+            classpath="testclasses;classes;./testlib/junit.jar" 
+            verbose="No"
+            additionalparam="-tag to.do:a:&quot;To Do:&quot;">
+          <fileset dir="src">
+            <include name="**/*.java" />
+            <exclude name="**/parser/*.java" />
+          </fileset>
+        </javadoc>
     </target>
 
-    <target name="main" depends="clean, prep,javacc,compile, test, binjar, javadoc, jar"/> 
+    <target name="main" depends="clean,prep,javacc,compile,javadoc,jar"/> 
   
   </project>

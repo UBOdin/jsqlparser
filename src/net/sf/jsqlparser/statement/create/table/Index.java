@@ -15,6 +15,8 @@ public class Index {
 
     /**
      * A list of strings of all the columns regarding this index  
+     *
+     * @return The String name of all columns indexed by this index.
      */
     public List<String> getColumnsNames() {
         return columnsNames;
@@ -26,6 +28,8 @@ public class Index {
 
     /**
      * The type of this index: "PRIMARY KEY", "UNIQUE", "INDEX"
+     *
+     * @return the String type of this index.
      */
     public String getType() {
         return type;

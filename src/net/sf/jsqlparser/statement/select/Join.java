@@ -127,6 +127,7 @@ public class Join {
 
 	/**
 	 * Returns the right item of the join
+	 * @return the item to the right of the JOIN
 	 */
 	public FromItem getRightItem() {
 		return rightItem;
@@ -138,6 +139,7 @@ public class Join {
 
 	/**
 	 * Returns the "ON" expression (if any)
+	 * @return the Join expression
 	 */
 	public Expression getOnExpression() {
 		return onExpression;
@@ -149,6 +151,7 @@ public class Join {
 
 	/**
 	 * Returns the "USING" list of {@link net.sf.jsqlparser.schema.Column}s (if any)
+	 * @return the USING columns
 	 */
 	public List<Column> getUsingColumns() {
 		return usingColumns;

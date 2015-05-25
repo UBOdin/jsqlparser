@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.schema.*;
 
 /**
  */
@@ -35,13 +35,13 @@ import net.sf.jsqlparser.schema.Table;
  */
 public class PlainSelect implements SelectBody {
 	private Distinct distinct = null;
-	private List selectItems;
+	private List<SelectItem> selectItems;
 	private Table into;
 	private FromItem fromItem;
-	private List joins;
+	private List<Join> joins;
 	private Expression where;
-	private List groupByColumnReferences;
-	private List orderByElements;
+	private List<Column> groupByColumnReferences;
+	private List<OrderByElement> orderByElements;
 	private Expression having;
 	private Limit limit;
 	private Top top;
@@ -64,7 +64,7 @@ public class PlainSelect implements SelectBody {
 	 * The {@link SelectItem}s in this query (for example the A,B,C in "SELECT A,B,C")
 	 * @return a list of {@link SelectItem}s
 	 */
-	public List getSelectItems() {
+	public List<SelectItem> getSelectItems() {
 		return selectItems;
 	}
 
@@ -81,7 +81,7 @@ public class PlainSelect implements SelectBody {
 	}
 
 
-	public void setSelectItems(List list) {
+	public void setSelectItems(List<SelectItem> list) {
 		selectItems = list;
 	}
 
@@ -94,11 +94,11 @@ public class PlainSelect implements SelectBody {
 	 * The list of {@link Join}s
 	 * @return the list of {@link Join}s
 	 */
-	public List getJoins() {
+	public List<Join> getJoins() {
 		return joins;
 	}
 
-	public void setJoins(List list) {
+	public void setJoins(List<Join> list) {
 		joins = list;
 	}
 
@@ -106,11 +106,11 @@ public class PlainSelect implements SelectBody {
 		selectVisitor.visit(this);
 	}
 
-	public List getOrderByElements() {
+	public List<OrderByElement> getOrderByElements() {
 		return orderByElements;
 	}
 
-	public void setOrderByElements(List orderByElements) {
+	public void setOrderByElements(List<OrderByElement> orderByElements) {
 		this.orderByElements = orderByElements;
 	}
 
@@ -151,11 +151,11 @@ public class PlainSelect implements SelectBody {
 	 * It is null in case there is no GROUP BY clause
 	 * @return a list of {@link Expression}s 
 	 */
-	public List getGroupByColumnReferences() {
+	public List<Column> getGroupByColumnReferences() {
 		return groupByColumnReferences;
 	}
 
-	public void setGroupByColumnReferences(List list) {
+	public void setGroupByColumnReferences(List<Column> list) {
 		groupByColumnReferences = list;
 	}
 
@@ -190,7 +190,7 @@ public class PlainSelect implements SelectBody {
 	}
 
 
-	public static String orderByToString(List orderByElements) {
+	public static String orderByToString(List<OrderByElement> orderByElements) {
 		return getFormatedList(orderByElements, "ORDER BY");
 	}
 

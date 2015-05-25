@@ -24,26 +24,27 @@
 
 import java.util.List;
 
+import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 
 /**
  * A list of expressions, as in SELECT A FROM TAB WHERE B IN (expr1,expr2,expr3)
  */
 public class ExpressionList implements ItemsList {
-	private List expressions;
+	private List<Expression> expressions;
 
 	public ExpressionList() {
 	}
 
-	public ExpressionList(List expressions) {
+	public ExpressionList(List<Expression> expressions) {
 		this.expressions = expressions;
 	}
 
-	public List getExpressions() {
+	public List<Expression> getExpressions() {
 		return expressions;
 	}
 
-	public void setExpressions(List list) {
+	public void setExpressions(List<Expression> list) {
 		expressions = list;
 	}
 

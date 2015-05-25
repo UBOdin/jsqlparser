@@ -24,8 +24,9 @@ package net.sf.jsqlparser.statement.replace;
 
 import java.util.List;
 
+import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
-import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.schema.*;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.StatementVisitor;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -36,9 +37,9 @@ import net.sf.jsqlparser.statement.select.SubSelect;
  */
 public class Replace implements Statement {
 	private Table table;
-	private List columns;
+	private List<Column> columns;
 	private ItemsList itemsList;
-	private List expressions;
+	private List<Expression> expressions;
 	private boolean useValues = true;
 
 	public void accept(StatementVisitor statementVisitor) {
@@ -57,7 +58,7 @@ public class Replace implements Statement {
 	 * A list of {@link net.sf.jsqlparser.schema.Column}s either from a "REPLACE mytab (col1, col2) [...]" or a "REPLACE mytab SET col1=exp1, col2=exp2". 
 	 * @return a list of {@link net.sf.jsqlparser.schema.Column}s
 	 */
-	public List getColumns() {
+	public List<Column> getColumns() {
 		return columns;
 	}
 
@@ -71,7 +72,7 @@ public class Replace implements Statement {
 	}
 
 
-	public void setColumns(List list) {
+	public void setColumns(List<Column> list) {
 		columns = list;
 	}
 
@@ -83,11 +84,11 @@ public class Replace implements Statement {
 	 * A list of {@link net.sf.jsqlparser.expression.Expression}s (from a "REPLACE mytab SET col1=exp1, col2=exp2"). <br>
 	 * it is null in case of a "REPLACE mytab (col1, col2) [...]"  
 	 */
-	public List getExpressions() {
+	public List<Expression> getExpressions() {
 		return expressions;
 	}
 
-	public void setExpressions(List list) {
+	public void setExpressions(List<Expression> list) {
 		expressions = list;
 	}
 

@@ -24,6 +24,7 @@ package net.sf.jsqlparser.expression;
 
 import java.util.List;
 
+import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 
 /**
@@ -61,7 +62,7 @@ public class CaseExpression implements Expression {
 
 	private Expression switchExpression;
 	
-	private List whenClauses;
+	private List<WhenClause> whenClauses;
 	
 	private Expression elseExpression;
 	
@@ -100,14 +101,14 @@ public class CaseExpression implements Expression {
 	/**
 	 * @return Returns the whenClauses.
 	 */
-	public List getWhenClauses() {
+	public List<WhenClause> getWhenClauses() {
 		return whenClauses;
 	}
 	
 	/**
 	 * @param whenClauses The whenClauses to set.
 	 */
-	public void setWhenClauses(List whenClauses) {
+	public void setWhenClauses(List<WhenClause> whenClauses) {
 		this.whenClauses = whenClauses;
 	}
 	

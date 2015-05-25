@@ -25,7 +25,7 @@ package net.sf.jsqlparser.expression;
 /**
  *  A "NULL" in a sql statement
  */
-public class NullValue implements Expression, LeafValue {
+public class NullValue implements Expression, PrimitiveValue {
 	public void accept(ExpressionVisitor expressionVisitor) {
 		expressionVisitor.visit(this);
 	}
@@ -34,8 +34,10 @@ public class NullValue implements Expression, LeafValue {
 		return "NULL";
 	}
 
-  public long toLong() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
-  public double toDouble() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
+  public long toLong() throws PrimitiveValue.InvalidPrimitive 
+  	{ throw new PrimitiveValue.InvalidPrimitive(); }
+  public double toDouble() throws PrimitiveValue.InvalidPrimitive 
+  	{ throw new PrimitiveValue.InvalidPrimitive(); }
 
   public boolean equals(Object o){
     return false;

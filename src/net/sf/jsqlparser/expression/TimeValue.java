@@ -28,7 +28,7 @@ import java.sql.Time;
 /**
  * A Time in the form {t 'hh:mm:ss'}
  */
-public class TimeValue implements Expression, LeafValue {
+public class TimeValue implements Expression, PrimitiveValue {
 	private Time value;
 
 	public TimeValue(String value) {
@@ -52,8 +52,10 @@ public class TimeValue implements Expression, LeafValue {
 		return "{t '"+value+"'}";
 	}
 
-  public long toLong() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
-  public double toDouble() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
+	public long toLong() throws PrimitiveValue.InvalidPrimitive 
+		{ throw new PrimitiveValue.InvalidPrimitive(); }
+	public double toDouble() throws PrimitiveValue.InvalidPrimitive 
+		{ throw new PrimitiveValue.InvalidPrimitive(); }
   
   public boolean equals(Object o){
     try { 

@@ -25,7 +25,7 @@ package net.sf.jsqlparser.expression;
 /**
  * Every number with a point or a exponential format is a DoubleValue
  */
-public class DoubleValue implements Expression, LeafValue {
+public class DoubleValue implements Expression, PrimitiveValue {
 	private double value;
 
   public DoubleValue(double value) { this.value = value; }
@@ -54,7 +54,8 @@ public class DoubleValue implements Expression, LeafValue {
 		return ""+value;
 	}
 	
-  public long toLong() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
+  public long toLong() throws PrimitiveValue.InvalidPrimitive
+  	{ throw new PrimitiveValue.InvalidPrimitive(); }
   public double toDouble() { return getValue(); }
   
   public boolean equals(Object o){

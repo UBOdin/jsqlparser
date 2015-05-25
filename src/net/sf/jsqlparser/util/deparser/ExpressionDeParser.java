@@ -175,7 +175,7 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
     }
 
     public void visit(LongValue longValue) {
-        buffer.append(longValue.getStringValue());
+        buffer.append(longValue.toString());
 
     }
 

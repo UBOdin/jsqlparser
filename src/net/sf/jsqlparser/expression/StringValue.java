@@ -25,7 +25,7 @@ package net.sf.jsqlparser.expression;
 /**
  * A string as in 'example_string'
  */
-public class StringValue implements Expression, LeafValue {
+public class StringValue implements Expression, PrimitiveValue {
 	private String value = "";
 	
 	public StringValue(String escapedValue) {
@@ -61,8 +61,10 @@ public class StringValue implements Expression, LeafValue {
 		return "'"+value+"'";
 	}
 
-  public long toLong() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
-  public double toDouble() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
+  public long toLong() throws PrimitiveValue.InvalidPrimitive 
+  	{ throw new PrimitiveValue.InvalidPrimitive(); }
+  public double toDouble() throws PrimitiveValue.InvalidPrimitive 
+  	{ throw new PrimitiveValue.InvalidPrimitive(); }
   
   public boolean equals(Object o){
     try { 

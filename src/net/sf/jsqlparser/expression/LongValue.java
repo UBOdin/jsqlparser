@@ -25,7 +25,7 @@ package net.sf.jsqlparser.expression;
 /**
  * Every number without a point or an exponential format is a LongValue
  */
-public class LongValue implements Expression, LeafValue {
+public class LongValue implements Expression, PrimitiveValue {
 	private long value;
 
   public LongValue(long value) { this.value = value; }

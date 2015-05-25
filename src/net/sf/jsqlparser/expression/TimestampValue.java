@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 /**
  * A Timestamp in the form {ts 'yyyy-mm-dd hh:mm:ss.f . . .'}
  */
-public class TimestampValue implements Expression, LeafValue {
+public class TimestampValue implements Expression, PrimitiveValue {
 	private Timestamp value;
 
 	public TimestampValue(String value) {
@@ -52,8 +52,10 @@ public class TimestampValue implements Expression, LeafValue {
 		return "{ts '"+value+"'}";
 	}
 
-  public long toLong() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
-  public double toDouble() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
+	public long toLong() throws PrimitiveValue.InvalidPrimitive 
+		{ throw new PrimitiveValue.InvalidPrimitive(); }
+	public double toDouble() throws PrimitiveValue.InvalidPrimitive 
+		{ throw new PrimitiveValue.InvalidPrimitive(); }
   
   public boolean equals(Object o){
     try { 

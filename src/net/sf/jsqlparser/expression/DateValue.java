@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 /**
  * A Date in the form {d 'yyyy-mm-dd'}
  */
-public class DateValue implements Expression, LeafValue {
+public class DateValue implements Expression, PrimitiveValue {
 	private Date value;
 	
 	public DateValue(String value) {
@@ -62,8 +62,10 @@ public class DateValue implements Expression, LeafValue {
     return value.toString();
   }
   
-  public long toLong() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
-  public double toDouble() throws LeafValue.InvalidLeaf { throw new LeafValue.InvalidLeaf(); }
+  public long toLong() throws PrimitiveValue.InvalidPrimitive 
+    { throw new PrimitiveValue.InvalidPrimitive(); }
+  public double toDouble() throws PrimitiveValue.InvalidPrimitive 
+    { throw new PrimitiveValue.InvalidPrimitive(); }
   
   public boolean equals(Object o){
     try { 

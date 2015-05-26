@@ -267,6 +267,7 @@ public interface CCJSqlParserConstants {
     "\"?\"",
     "\">\"",
     "\"<\"",
+    "\"==\"",
     "\">=\"",
     "\"<=\"",
     "\"<>\"",

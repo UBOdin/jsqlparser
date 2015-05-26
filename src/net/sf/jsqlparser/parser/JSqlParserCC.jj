@@ -240,7 +240,9 @@ TOKEN:
 | 	< #LETTER: ["a"-"z", "A"-"Z", "_"] >
 |   < #SPECIAL_CHARS: "$" | "_">
 |   < S_CHAR_LITERAL: "'" (~["'"])* "'" ("'" (~["'"])* "'")*>
-|   < S_QUOTED_IDENTIFIER: "\"" (~["\n","\r","\""])* "\"" | ("`" (~["\n","\r","`"])* "`") >
+|   < S_QUOTED_IDENTIFIER:   ("\"" (~["\n","\r","\""])* "\"") 
+                           | ("`" (~["\n","\r","`"])* "`") 
+                           | ("[" (~["\n","\r","`"])* "]") >
 }
 
 Statement Statement() :
@@ -361,7 +363,9 @@ Insert Insert():
 	Expression exp = null;
 }
 {
-    <K_INSERT> [<K_INTO>] table=Table()
+    <K_INSERT> 
+    [<K_OR> <K_REPLACE> { insert.setIsOrReplace(true); }]
+    [<K_INTO>] table=Table()
     
     
      [LOOKAHEAD(2) "(" tableColumn=Column() { columns.add(tableColumn); } ("," tableColumn=Column() { columns.add(tableColumn); } )* ")"  ]
@@ -1008,6 +1012,7 @@ Expression RegularCondition():
 	(
 	">" { result = new GreaterThan(); }
 	| "<" { result = new MinorThan(); }
+	| "==" { result = new EqualsTo(); }
 	| "=" { result = new EqualsTo(); }
 	| ">=" { result = new GreaterThanEquals(); }
 	| "<=" { result = new MinorThanEquals(); }
@@ -1030,6 +1035,7 @@ Expression RegularCondition():
 Expression SQLCondition():
 {
 	Expression result;
+	Token tok;
 }
 {
 	(
@@ -1037,7 +1043,8 @@ Expression SQLCondition():
 	| LOOKAHEAD(Between()) result=Between()
 	| LOOKAHEAD(IsNullExpression()) result=IsNullExpression()
 	| LOOKAHEAD(ExistsExpression()) result=ExistsExpression()
-	|  result=LikeExpression()
+	| LOOKAHEAD(LikeExpression()) result=LikeExpression()
+	| LOOKAHEAD(1) tok = <S_INTEGER> { result = new LongValue(tok.image); }
 	)
 	{ return result; }
 }
@@ -1050,7 +1057,7 @@ Expression InExpression() :
 }
 {
 	leftExpression=SimpleExpression()
-    [<K_NOT> { result.setNot(true); } ] <K_IN> "(" (LOOKAHEAD(SubSelect()) itemsList=SubSelect() | itemsList=SimpleExpressionList() ) ")"
+    [<K_NOT> { result.setNot(true); } ] <K_IN> "(" [(LOOKAHEAD(SubSelect()) itemsList=SubSelect() | itemsList=SimpleExpressionList() )] ")"
 	{ 
 		result.setLeftExpression(leftExpression);
 		result.setItemsList(itemsList);

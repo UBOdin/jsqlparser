@@ -40,6 +40,7 @@ public class Insert implements Statement {
 	private List<Column> columns;
 	private ItemsList itemsList;
 	private boolean useValues = true;
+	private boolean orReplace = false;
 	
 	public void accept(StatementVisitor statementVisitor) {
 		statementVisitor.visit(this);
@@ -83,6 +84,12 @@ public class Insert implements Statement {
     
     public void setUseValues(boolean useValues) {
         this.useValues = useValues;
+    }
+
+    public boolean isOrReplace() { return orReplace; }
+
+    public void setIsOrReplace(boolean orReplace) {
+    	this.orReplace = orReplace;
     }
     
 	public String toString() {

@@ -56,6 +56,7 @@ package net.sf.jsqlparser.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.DoubleValue;
@@ -70,6 +71,7 @@ import net.sf.jsqlparser.expression.TimestampValue;
 import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.CaseExpression;
 import net.sf.jsqlparser.expression.WhenClause;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;
@@ -446,6 +448,12 @@ String RelObjectName()  :
 	tk=<S_IDENTIFIER>
 	|
 	tk=<S_QUOTED_IDENTIFIER>
+	| 
+	<K_BEGIN> { return "begin"; }
+	| 
+	<K_END> { return "end"; }
+	| 
+	<K_KEY> { return "key"; }
 	)
 	
     { return tk.image; }
@@ -1044,7 +1052,13 @@ Expression SQLCondition():
 	| LOOKAHEAD(IsNullExpression()) result=IsNullExpression()
 	| LOOKAHEAD(ExistsExpression()) result=ExistsExpression()
 	| LOOKAHEAD(LikeExpression()) result=LikeExpression()
-	| LOOKAHEAD(1) tok = <S_INTEGER> { result = new LongValue(tok.image); }
+	| LOOKAHEAD(1) tok = <S_INTEGER> { 
+			if(Long.parseLong(tok.image) != 0){ 
+				result = BooleanValue.TRUE;
+			} else {
+				result = BooleanValue.FALSE;
+			}
+		}
 	)
 	{ return result; }
 }
@@ -1054,10 +1068,27 @@ Expression InExpression() :
 	InExpression result = new InExpression();
 	ItemsList itemsList = null;
 	Expression leftExpression = null;
+	Table table = null;
 }
 {
 	leftExpression=SimpleExpression()
-    [<K_NOT> { result.setNot(true); } ] <K_IN> "(" [(LOOKAHEAD(SubSelect()) itemsList=SubSelect() | itemsList=SimpleExpressionList() )] ")"
+    [<K_NOT> { result.setNot(true); } ] <K_IN> ( ("(" 
+    	[	( LOOKAHEAD(SubSelect()) itemsList=SubSelect() 
+    		| LOOKAHEAD(SimpleExpressionList()) itemsList=SimpleExpressionList() 
+    		)] ")")
+    	|   LOOKAHEAD(Table()) table = Table() {
+    		// Encode `x IN tableName` as `x in (SELECT * FROM tableName)`
+			SubSelect subSel = new SubSelect();
+			PlainSelect body = new PlainSelect();
+			subSel.setAlias(table.getName());
+			subSel.setSelectBody(body);
+			body.setFromItem(table);
+			body.setSelectItems(Arrays.asList(
+				new AllColumns()
+			));
+			itemsList = subSel;
+		})
+
 	{ 
 		result.setLeftExpression(leftExpression);
 		result.setItemsList(itemsList);

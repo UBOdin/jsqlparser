@@ -20,6 +20,7 @@ import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
+import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.WhenClause;
 import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
 import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseAnd;
@@ -371,5 +372,9 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
 	public void visit(BitwiseXor bitwiseXor) {
         visitBinaryExpression(bitwiseXor, " ^ ");
 	}
+
+    public void visit(BooleanValue booleanValue) {
+        buffer.append(booleanValue.getValue() ? "TRUE" : "FALSE");
+    }
 
 }

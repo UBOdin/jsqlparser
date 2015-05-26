@@ -25,6 +25,7 @@
 package net.sf.jsqlparser.parser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
@@ -38,6 +39,7 @@ import net.sf.jsqlparser.expression.TimestampValue;
 import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.CaseExpression;
 import net.sf.jsqlparser.expression.WhenClause;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;

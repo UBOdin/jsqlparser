@@ -231,8 +231,6 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
     }
 
     private void visitBinaryExpression(BinaryExpression binaryExpression, String operator) {
-        if (binaryExpression.isNot())
-            buffer.append(" NOT ");
         binaryExpression.getLeftExpression().accept(this);
         buffer.append(operator);
         binaryExpression.getRightExpression().accept(this);

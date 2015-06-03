@@ -129,7 +129,9 @@ public abstract class ExpressionVisitorBase implements ExpressionVisitor {
 				if(il == null){ return; }
 				il.accept(new ItemsListVisitor(){
 					public void visit(ExpressionList el){ 
-						children.addAll(el.getExpressions());
+						if(el.getExpressions() != null){
+							children.addAll(el.getExpressions());
+						}
 					}
 					public void visit(SubSelect ss){
 						children.add(ss);

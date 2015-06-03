@@ -22,6 +22,9 @@
  
 package net.sf.jsqlparser.expression;
 
+import net.sf.jsqlparser.expression.operators.conditional.*;
+import net.sf.jsqlparser.expression.operators.relational.*;
+
 /**
  * It represents a "-" before an expression 
  */
@@ -47,4 +50,25 @@ public class InverseExpression implements Expression {
 		expressionVisitor.visit(this);
 	}
 
+	public String toString() 
+	{
+		if(
+			(expression instanceof BooleanValue)
+			|| (expression instanceof AndExpression)
+			|| (expression instanceof OrExpression)
+			|| (expression instanceof Between)
+			|| (expression instanceof EqualsTo)
+			|| (expression instanceof ExistsExpression)
+			|| (expression instanceof GreaterThan)
+			|| (expression instanceof GreaterThanEquals)
+			|| (expression instanceof InExpression)
+			|| (expression instanceof IsNullExpression)
+			|| (expression instanceof LikeExpression)
+			|| (expression instanceof Matches)
+			|| (expression instanceof MinorThan)
+			|| (expression instanceof MinorThanEquals)
+			|| (expression instanceof NotEqualsTo)
+		){ return "NOT (" + expression.toString() + ")"; }
+		else { return "-(" + expression.toString() + ")"; }
+	}
 }

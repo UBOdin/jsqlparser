@@ -16,7 +16,6 @@ import net.sf.jsqlparser.expression.InverseExpression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
-import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
@@ -207,16 +206,6 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
 
     public void visit(OrExpression orExpression) {
         visitBinaryExpression(orExpression, " OR ");
-
-    }
-
-    public void visit(Parenthesis parenthesis) {
-    	if (parenthesis.isNot())
-            buffer.append(" NOT ");
-    		
-        buffer.append("(");
-        parenthesis.getExpression().accept(this);
-        buffer.append(")");
 
     }
 

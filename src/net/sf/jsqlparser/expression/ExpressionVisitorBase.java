@@ -61,7 +61,7 @@ public abstract class ExpressionVisitorBase implements ExpressionVisitor {
 		this.recur = recur;
 	}
 
-	private void unhandled(Expression e)
+	public void unhandled(Expression e)
 	{
 		if(verboseUnhandled != null){ 
 			verboseUnhandled.println("Unhandled: Expression-"+e.getClass().toString()); 
@@ -72,7 +72,9 @@ public abstract class ExpressionVisitorBase implements ExpressionVisitor {
 	public void recur(Expression e)
 	{
 		for(Expression child : getChildren(e)){
-			child.accept(this);
+			if(child != null) {
+				child.accept(this);
+			}
 		}
 	}
 
@@ -86,7 +88,6 @@ public abstract class ExpressionVisitorBase implements ExpressionVisitor {
 	public void visit(TimeValue e) { unhandled(e); }
 	public void visit(TimestampValue e) { unhandled(e); }
 	public void visit(BooleanValue e) { unhandled(e); }
-	public void visit(Parenthesis e) { unhandled(e); }
 	public void visit(StringValue e) { unhandled(e); }
 	public void visit(Addition e) { unhandled(e); }
 	public void visit(Division e) { unhandled(e); }

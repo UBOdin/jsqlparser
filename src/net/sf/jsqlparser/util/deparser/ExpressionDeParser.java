@@ -16,10 +16,10 @@ import net.sf.jsqlparser.expression.InverseExpression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
-import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
+import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.WhenClause;
 import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
 import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseAnd;
@@ -209,16 +209,6 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
 
     }
 
-    public void visit(Parenthesis parenthesis) {
-    	if (parenthesis.isNot())
-            buffer.append(" NOT ");
-    		
-        buffer.append("(");
-        parenthesis.getExpression().accept(this);
-        buffer.append(")");
-
-    }
-
     public void visit(StringValue stringValue) {
         buffer.append("'" + stringValue.getValue() + "'");
 
@@ -230,8 +220,6 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
     }
 
     private void visitBinaryExpression(BinaryExpression binaryExpression, String operator) {
-        if (binaryExpression.isNot())
-            buffer.append(" NOT ");
         binaryExpression.getLeftExpression().accept(this);
         buffer.append(operator);
         binaryExpression.getRightExpression().accept(this);
@@ -371,5 +359,9 @@ public class ExpressionDeParser implements ExpressionVisitor, ItemsListVisitor {
 	public void visit(BitwiseXor bitwiseXor) {
         visitBinaryExpression(bitwiseXor, " ^ ");
 	}
+
+    public void visit(BooleanValue booleanValue) {
+        buffer.append(booleanValue.getValue() ? "TRUE" : "FALSE");
+    }
 
 }

@@ -30,7 +30,6 @@ package net.sf.jsqlparser.expression;
 public abstract class BinaryExpression implements Expression {
 	private Expression leftExpression;
 	private Expression rightExpression;
-	private boolean not = false;
 
 	public BinaryExpression(Expression leftExpression, Expression rightExpression) {
   	this.leftExpression = leftExpression;
@@ -56,16 +55,8 @@ public abstract class BinaryExpression implements Expression {
 		rightExpression = expression;
 	}
 
-	public void setNot() {
-		not = true;
-	}
-
-	public boolean isNot() {
-		return not;
-	}
-
 	public String toString() {
-		return (not? "NOT ":"") + getLeftExpression()+" "+getStringExpression()+" "+getRightExpression();
+		return getLeftExpression()+" "+getStringExpression()+" "+getRightExpression();
 	}
 
 	public abstract String getStringExpression();

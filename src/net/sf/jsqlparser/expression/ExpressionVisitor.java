@@ -57,7 +57,7 @@ public interface ExpressionVisitor {
 	public void visit(DateValue dateValue);
 	public void visit(TimeValue timeValue);
 	public void visit(TimestampValue timestampValue);
-	public void visit(Parenthesis parenthesis);
+	public void visit(BooleanValue booleanValue);
 	public void visit(StringValue stringValue);
 	public void visit(Addition addition);
 	public void visit(Division division);

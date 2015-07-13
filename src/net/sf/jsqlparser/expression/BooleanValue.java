@@ -26,7 +26,7 @@ package net.sf.jsqlparser.expression;
 /**
  * Every number without a point or an exponential format is a LongValue
  */
-public class BooleanValue implements PrimitiveValue {
+public class BooleanValue implements PrimitiveValue, Expression {
 	private boolean value;
 
 	private BooleanValue(boolean value) { this.value = value; }
@@ -52,4 +52,5 @@ public class BooleanValue implements PrimitiveValue {
     }
   }
 
+  public void accept(ExpressionVisitor visitor) { visitor.visit(this); }
 }

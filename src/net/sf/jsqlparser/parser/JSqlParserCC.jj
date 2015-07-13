@@ -56,6 +56,7 @@ package net.sf.jsqlparser.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.DoubleValue;
@@ -68,8 +69,8 @@ import net.sf.jsqlparser.expression.DateValue;
 import net.sf.jsqlparser.expression.TimeValue;
 import net.sf.jsqlparser.expression.TimestampValue;
 import net.sf.jsqlparser.expression.NullValue;
-import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.BooleanValue;
 import net.sf.jsqlparser.expression.CaseExpression;
 import net.sf.jsqlparser.expression.WhenClause;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;
@@ -211,6 +212,7 @@ TOKEN: /* SQL Keywords. prefixed with K_ to avoid name clashes */
 |   <K_TRUNCATE:"TRUNCATE">
 |   <K_DISTINCT:"DISTINCT">
 |   <K_INTERSECT:"INTERSECT">
+|   <K_CAST:"CAST">
 }
 
 
@@ -242,7 +244,7 @@ TOKEN:
 |   < S_CHAR_LITERAL: "'" (~["'"])* "'" ("'" (~["'"])* "'")*>
 |   < S_QUOTED_IDENTIFIER:   ("\"" (~["\n","\r","\""])* "\"") 
                            | ("`" (~["\n","\r","`"])* "`") 
-                           | ("[" (~["\n","\r","`"])* "]") >
+                           | ("[" (~["\n","\r","]"])* "]") >
 }
 
 Statement Statement() :
@@ -446,6 +448,12 @@ String RelObjectName()  :
 	tk=<S_IDENTIFIER>
 	|
 	tk=<S_QUOTED_IDENTIFIER>
+	| 
+	<K_BEGIN> { return "begin"; }
+	| 
+	<K_END> { return "end"; }
+	| 
+	<K_KEY> { return "key"; }
 	)
 	
     { return tk.image; }
@@ -656,7 +664,7 @@ SelectItem SelectItem():
     |
 	LOOKAHEAD(AllTableColumns()) selectItem=AllTableColumns()
 	|
-	 expression=SimpleExpression() { selectExpressionItem = new SelectExpressionItem(); selectExpressionItem.setExpression(expression); }
+	 expression=Expression() { selectExpressionItem = new SelectExpressionItem(); selectExpressionItem.setExpression(expression); }
 			 [alias=Alias() { selectExpressionItem.setAlias(alias); }] { selectItem = selectExpressionItem; }
 	)
 	{
@@ -840,7 +848,7 @@ OrderByElement OrderByElement():
 	Expression columnReference = null;
 }
 {
-	columnReference = SimpleExpression()
+	columnReference = Expression()
     [<K_ASC> | (<K_DESC> { orderByElement.setAsc(false); } )  ]
 	{
     	orderByElement.setExpression(columnReference);
@@ -916,15 +924,7 @@ Expression Expression():
 	Expression retval = null;
 }
 {
-	(
-	LOOKAHEAD(OrExpression())
-		retval=OrExpression() 
-		|
-		"(" retval=Expression() ")" {retval = new Parenthesis(retval); }
-		
-	)
-	
-    { return retval; }
+	retval = OrExpression() { return retval; }
 }
 
 Expression OrExpression()  :
@@ -934,9 +934,7 @@ Expression OrExpression()  :
 {
 	left=AndExpression() { result = left; }
 	(
-		LOOKAHEAD(<K_OR>) 
-			<K_OR>
-			right=AndExpression()
+		LOOKAHEAD(<K_OR>) <K_OR> right=AndExpression()
 			{
 				result = new OrExpression(left, right);
 				left = result;
@@ -945,97 +943,76 @@ Expression OrExpression()  :
 	 {
 	 	return result;
 	 }
-	   
 }
-
-
 
 Expression AndExpression() :
 {
 	Expression left, right, result;
-	boolean not = false;
 }
 {
-
+	left=Condition() { result = left; }
 	(
-	LOOKAHEAD(Condition())
-	    left=Condition()
-	    |
-	    [ <K_NOT> { not = true; } ]
-	    "(" left=OrExpression() ")" {left = new Parenthesis(left); if (not) { ((Parenthesis)left).setNot(); not = false; } }
-	)
-	{ result = left; }
-	
-	(
-		LOOKAHEAD(<K_AND>)
- 		<K_AND>
-		(
-		LOOKAHEAD(Condition())
-		    right=Condition()
-		    |
-		    [ <K_NOT> { not = true; } ]
-		    "(" right=OrExpression() ")" {right = new Parenthesis(right); if (not) { ((Parenthesis)right).setNot(); not = false; } }
-		)
-		{
-			result = new AndExpression(left, right);
-			left = result;
-		}
-	)*
-	{
-		return result;
-	}
+		LOOKAHEAD(<K_AND>) <K_AND> right=Condition()
+			{
+				result = new AndExpression(left, right);
+				left = result;
+	   		}
+	 )*
+	 {
+	 	return result;
+	 }
 }
 
 Expression Condition():
 {
 	Expression result;
+	Token tok;
 }
 {
-	(LOOKAHEAD(SQLCondition()) result=SQLCondition()
-	| result=RegularCondition())
+	( LOOKAHEAD(<K_NOT>) (<K_NOT> result = Condition() 
+							{ result = new InverseExpression(result); })
+	| LOOKAHEAD(SQLCondition()) result=SQLCondition()
+	| LOOKAHEAD(RegularCondition()) result=RegularCondition()
+	)
 	
 	{ return result; }
 }
 
 Expression RegularCondition():
 {
-	Expression result = null;
+	BinaryExpression result;
 	Expression leftExpression;
 	Expression rightExpression;
-	boolean not = false;
 }
 {
-
-	[ <K_NOT> { not = true; } ] 
-	leftExpression=ComparisonItem() { result = leftExpression; }
-
-	(
-	">" { result = new GreaterThan(); }
+	leftExpression=SimpleExpression()
+	[ LOOKAHEAD(">" | "<" | "==" | "=" | "<=" | ">=" | "<>" | "!=" | "@@" | <K_IS> | <K_LIKE> | <K_NOT> <K_LIKE> ) (
+	  ">" { result = new GreaterThan(); }
 	| "<" { result = new MinorThan(); }
-	| "==" { result = new EqualsTo(); }
-	| "=" { result = new EqualsTo(); }
+	| ("==" | "=" | <K_IS> ) { result = new EqualsTo(); }
 	| ">=" { result = new GreaterThanEquals(); }
 	| "<=" { result = new MinorThanEquals(); }
 	| ("<>" | "!=") { result = new NotEqualsTo(); }
 	| "@@" { result = new Matches(); }
+	| <K_LIKE> { result = new LikeExpression(); }
+	| <K_NOT> <K_LIKE> { result = new LikeExpression(); ((LikeExpression)result).setNot(true); }
 	)
-	rightExpression=ComparisonItem()
+		rightExpression=ComparisonItem()
+		{
+			result.setLeftExpression(leftExpression);
+			result.setRightExpression(rightExpression);
+			leftExpression = result;
+		}
+	]
 	{
-		BinaryExpression regCond = (BinaryExpression) result;
-		regCond.setLeftExpression(leftExpression);
-		regCond.setRightExpression(rightExpression);
-		if (not)
-			regCond.setNot();
+		return leftExpression;
 	}		
-	
-	{ return result; }
 }
 
 
 Expression SQLCondition():
 {
 	Expression result;
-	Token tok;
 }
 {
 	(
@@ -1043,10 +1020,33 @@ Expression SQLCondition():
 	| LOOKAHEAD(Between()) result=Between()
 	| LOOKAHEAD(IsNullExpression()) result=IsNullExpression()
 	| LOOKAHEAD(ExistsExpression()) result=ExistsExpression()
-	| LOOKAHEAD(LikeExpression()) result=LikeExpression()
-	| LOOKAHEAD(1) tok = <S_INTEGER> { result = new LongValue(tok.image); }
 	)
 	{ return result; }
+}
+
+ItemsList ItemList() :
+{
+	ItemsList itemsList = null;
+	Table table = null;
+}
+{
+	(("(" 
+    	[	( LOOKAHEAD(SubSelect()) itemsList=SubSelect() 
+    		| LOOKAHEAD(ExpressionList()) itemsList=ExpressionList() 
+    		)] ")")
+    	|   LOOKAHEAD(Table()) table = Table() {
+    		// Encode `x IN tableName` as `x in (SELECT * FROM tableName)`
+			SubSelect subSel = new SubSelect();
+			PlainSelect body = new PlainSelect();
+			subSel.setAlias(table.getName());
+			subSel.setSelectBody(body);
+			body.setFromItem(table);
+			body.setSelectItems(Arrays.asList(
+				new AllColumns()
+			));
+			itemsList = subSel;
+		}
+	) { return itemsList; }
 }
 
 Expression InExpression() :
@@ -1057,7 +1057,7 @@ Expression InExpression() :
 }
 {
 	leftExpression=SimpleExpression()
-    [<K_NOT> { result.setNot(true); } ] <K_IN> "(" [(LOOKAHEAD(SubSelect()) itemsList=SubSelect() | itemsList=SimpleExpressionList() )] ")"
+    [<K_NOT> { result.setNot(true); } ] <K_IN> itemsList = ItemList()
 	{ 
 		result.setLeftExpression(leftExpression);
 		result.setItemsList(itemsList);
@@ -1085,23 +1085,6 @@ Expression Between() :
 	}
 }
 
-Expression LikeExpression() :
-{
-	LikeExpression result = new LikeExpression();
-	Expression leftExpression = null;
-	Expression rightExpression = null;
-}
-{
-	leftExpression=SimpleExpression()
-    [<K_NOT> { result.setNot(true); } ] <K_LIKE> rightExpression=SimpleExpression()
-    [<K_ESCAPE> token=<S_CHAR_LITERAL> { result.setEscape((new StringValue(token.image)).getValue()); }]
-	{ 
-		result.setLeftExpression(leftExpression);
-		result.setRightExpression(rightExpression);
-		return result; 
-	}
-}
-
 Expression IsNullExpression():
 {
 	IsNullExpression result = new IsNullExpression();
@@ -1124,7 +1107,7 @@ Expression ExistsExpression():
 	Expression rightExpression = null;
 }
 {
-    [<K_NOT> { result.setNot(true); } ] <K_EXISTS> rightExpression=SimpleExpression()
+    <K_EXISTS> rightExpression=SimpleExpression()
 	{ 
 		result.setRightExpression(rightExpression);
 		return result; 
@@ -1132,28 +1115,15 @@ Expression ExistsExpression():
 }
 
 
-ExpressionList SQLExpressionList():
+ExpressionList ExpressionList():
 {
 	ExpressionList retval = new ExpressionList();
 	List expressions = new ArrayList();
 	Expression expr = null;
 }
 {
-    expr=Expression() { expressions.add(expr); } ("," expr=Expression() { expressions.add(expr); })*
-	{
-		retval.setExpressions(expressions);
-		return retval;
-	}
-}
-
-ExpressionList SimpleExpressionList():
-{
-	ExpressionList retval = new ExpressionList();
-	List expressions = new ArrayList();
-	Expression expr = null;
-}
-{
-    expr=SimpleExpression() { expressions.add(expr); } ("," expr=SimpleExpression() { expressions.add(expr); })*
+    expr=Expression() { expressions.add(expr); } 
+      ( LOOKAHEAD(",") "," expr=Expression() { expressions.add(expr); })*
 	{
 		retval.setExpressions(expressions);
 		return retval;
@@ -1166,8 +1136,8 @@ Expression ComparisonItem() :
 }
 {
   (
-    retval=AllComparisonExpression()
-    | retval=AnyComparisonExpression()
+      LOOKAHEAD(2) retval=AllComparisonExpression()
+    | LOOKAHEAD(2) retval=AnyComparisonExpression()
     | retval=SimpleExpression()
   )
 
@@ -1205,89 +1175,74 @@ Expression SimpleExpression():
 	Expression retval = null; 
 }
 {
-  (
-		LOOKAHEAD(BitwiseAndOr())
-		retval=BitwiseAndOr() 
-		|
-		"(" retval=BitwiseAndOr() ")" {retval = new Parenthesis(retval); }
-  
-  )
-
-   {
-      return retval;
-   }
-}
-
-Expression ConcatExpression():
-{
-	Expression result = null;
-	Expression leftExpression = null;
-	Expression rightExpression = null;
-}
-{
-    leftExpression=AdditiveExpression()  { result = leftExpression; }
-    (
-    	"||"
-    	rightExpression=AdditiveExpression()
-		{
-			Concat binExp = new Concat();
-			binExp.setLeftExpression(leftExpression);
-			binExp.setRightExpression(rightExpression);
-			result = binExp;
-			leftExpression = result; 
-		}								
-    )*
-    
-    { return result; }
+  retval=BitwiseAndOr() { return retval; }
 }
 
 Expression BitwiseAndOr():
 {
+	BinaryExpression binExp;
 	Expression result = null;
-	Expression leftExpression = null;
 	Expression rightExpression = null;
 }
 {
-    leftExpression=ConcatExpression()  { result = leftExpression; }
+    result=ConcatExpression() 
     (
     	LOOKAHEAD(2) (
-    					"|" { result = new BitwiseOr(); }
+    					"|" { binExp = new BitwiseOr(); }
     				  	| 
-    				  	"&" { result = new BitwiseAnd(); } 
+    				  	"&" { binExp = new BitwiseAnd(); } 
     				  ) 
     								
     						rightExpression=ConcatExpression()
     						
 		{
-			BinaryExpression binExp = (BinaryExpression) result;
-			binExp.setLeftExpression(leftExpression);
+			binExp.setLeftExpression(result);
 			binExp.setRightExpression(rightExpression);
-			leftExpression = result; 
+			result = binExp; 
 		}								
     )*
     
     { return result; }
 }
 
-Expression AdditiveExpression():
+Expression ConcatExpression():
 {
 	Expression result = null;
-	Expression leftExpression = null;
 	Expression rightExpression = null;
 }
 {
-    leftExpression=MultiplicativeExpression()  { result = leftExpression; }
+    result=AdditiveExpression() 
     (
-    	LOOKAHEAD(2) ("+" { result = new Addition(); }
-    								| "-" { result = new Subtraction(); } ) 
+    	"||"
+    	rightExpression=AdditiveExpression()
+		{
+			Concat binExp = new Concat();
+			binExp.setLeftExpression(result);
+			binExp.setRightExpression(rightExpression);
+			result = binExp;
+		}								
+    )*
+    { return result; }
+}
+
+Expression AdditiveExpression():
+{
+	BinaryExpression binExp = null;
+	Expression result = null;
+	Expression rightExpression = null;
+}
+{
+    result=MultiplicativeExpression() 
+    (
+    	LOOKAHEAD(2) ("+" { binExp = new Addition(); }
+    								| "-" { binExp = new Subtraction(); } ) 
     								
     						rightExpression=MultiplicativeExpression()
     						
 		{
-			BinaryExpression binExp = (BinaryExpression) result;
-			binExp.setLeftExpression(leftExpression);
+			binExp.setLeftExpression(result);
 			binExp.setRightExpression(rightExpression);
-			leftExpression = result; 
+			result = binExp; 
 		}								
     )*
     
@@ -1297,34 +1252,20 @@ Expression AdditiveExpression():
 
 Expression MultiplicativeExpression():
 {
+	BinaryExpression binExp = null;
 	Expression result = null;
-	Expression leftExpression = null;
 	Expression rightExpression = null;
 }
 {
-	(
-	LOOKAHEAD(BitwiseXor())
-	    leftExpression=BitwiseXor()
-	    |
-	    "(" leftExpression=AdditiveExpression() ")" {leftExpression = new Parenthesis(leftExpression); }
-	)
-      { result = leftExpression; }
+    result=BitwiseXor()
     (
-    	LOOKAHEAD(2) ("*" { result = new Multiplication(); }
-    								| "/" { result = new Division(); } ) 
-    								
-				(
-				LOOKAHEAD(BitwiseXor())
-    						rightExpression=BitwiseXor()
-						    |
-						    "(" rightExpression=AdditiveExpression() ")" {rightExpression = new Parenthesis(rightExpression); }
-				)
-    						
+    	LOOKAHEAD(2) ("*" { binExp = new Multiplication(); }
+    								| "/" { binExp = new Division(); } ) 
+		rightExpression=BitwiseXor()
 		{
-			BinaryExpression binExp = (BinaryExpression) result;
-			binExp.setLeftExpression(leftExpression);
+			binExp.setLeftExpression(result);
 			binExp.setRightExpression(rightExpression);
-			leftExpression = result; 
+			result = binExp; 
 		}								
     )*
     { return result; }
@@ -1333,32 +1274,43 @@ Expression MultiplicativeExpression():
 Expression BitwiseXor():
 {
 	Expression result = null;
-	Expression leftExpression = null;
 	Expression rightExpression = null;
 }
 {
-    leftExpression=PrimaryExpression()  { result = leftExpression; }
+    result=PMExpression()
     (
     	"^"
-    	rightExpression=PrimaryExpression()
+    	rightExpression=PMExpression()
 		{
 			BitwiseXor binExp = new BitwiseXor();
-			binExp.setLeftExpression(leftExpression);
+			binExp.setLeftExpression(result);
 			binExp.setRightExpression(rightExpression);
 			result = binExp;
-			leftExpression = result; 
 		}								
     )*
     
     { return result; }
 }
 
+Expression PMExpression():
+{
+	Expression retval = null;
+	boolean isInverse = false;
+}
+{
+	[ "+" | 
+	  ("-" { isInverse = false; })
+	] retval = PrimaryExpression()
+	{
+		if(isInverse) { retval = new InverseExpression(retval); }
+		return retval;
+	}
+}
 
 Expression PrimaryExpression():
 { 
 	Expression retval = null;
 	Token token = null;
-	boolean isInverse = false;
 	String tmp = "";
 }
 {
@@ -1367,37 +1319,33 @@ Expression PrimaryExpression():
 
 	<K_NULL> { retval = new NullValue(); }
 
-	|	retval=CaseWhenExpression()
+	| LOOKAHEAD(CaseWhenExpression()) retval=CaseWhenExpression()
 	
 	| "?" { retval = new JdbcParameter(); }
 	
-	|    LOOKAHEAD([ "+" | "-"] Function()) [ "+" | "-" { isInverse = true; }] retval=Function() 
+	| LOOKAHEAD(Function())  retval=Function() 
 	
-	| LOOKAHEAD([	"+" | "-"] <S_DOUBLE>) 	[	"+" | "-" { tmp = "-"; }]  token=<S_DOUBLE> { retval = new DoubleValue(tmp+token.image); }
+	| token=<S_DOUBLE> { retval = new DoubleValue(token.image); }
 	
-	| LOOKAHEAD([	"+" | "-"] <S_INTEGER>)  	[	"+" | "-" { tmp = "-"; }]  token=<S_INTEGER> { retval = new LongValue(tmp+token.image); }
+	| token=<S_INTEGER> { retval = new LongValue(token.image); }
 
-	| LOOKAHEAD(2) 	[ "+" | "-" { isInverse = true; }] retval=Column() 
+	| LOOKAHEAD(Column()) retval=Column() 
 
-	| LOOKAHEAD(2) [ "+" | "-" { isInverse = true; }]  "(" retval=PrimaryExpression() ")" {retval = new Parenthesis(retval); }
+	| ( "(" (
+		  LOOKAHEAD(SubSelect()) retval=SubSelect()
+		| LOOKAHEAD(Expression()) retval=Expression() 
+	  ) ")" )
 
 	| token=<S_CHAR_LITERAL> { retval = new StringValue(token.image); }
-
-	| [ "+" | "-" { isInverse = true; }] "(" retval=SubSelect() ")"
 	
 	| 	"{d" token=<S_CHAR_LITERAL> "}" { retval = new DateValue(token.image); }
 
 	| 	"{t" token=<S_CHAR_LITERAL> "}" { retval = new TimeValue(token.image); }
 
 	| 	"{ts" token=<S_CHAR_LITERAL> "}" { retval = new TimestampValue(token.image); }
-	
-	
 )
 
     { 
-		if (isInverse) { 
-			retval = new InverseExpression(retval); 
-		}
     	return retval; 
     }
 }
@@ -1415,11 +1363,11 @@ Expression CaseWhenExpression():
 	<K_CASE> 
 	(
     	    ( clause=WhenThenSearchCondition() { whenClauses.add(clause); } )+
-             [<K_ELSE> elseExp=PrimaryExpression()]
+             [<K_ELSE> elseExp=Expression()]
 		|
-		    switchExp=PrimaryExpression()
+		    switchExp=Expression()
              ( clause=WhenThenValue() { whenClauses.add(clause); } )*
-             [<K_ELSE> elseExp=PrimaryExpression()]
+             [<K_ELSE> elseExp=Expression()]
 	)             
     <K_END>
     { 
@@ -1437,7 +1385,7 @@ WhenClause WhenThenSearchCondition():
 	Expression thenExp = null;
 }
 {
-	<K_WHEN> whenExp=Expression() <K_THEN> thenExp=SimpleExpression()
+	<K_WHEN> whenExp=Expression() <K_THEN> thenExp=Expression()
 	{
 	   whenThen.setWhenExpression(whenExp);
 	   whenThen.setThenExpression(thenExp);
@@ -1452,7 +1400,7 @@ WhenClause WhenThenValue():
 	Expression thenExp = null;
 }
 {
-	<K_WHEN> whenExp=PrimaryExpression() <K_THEN> thenExp=SimpleExpression()
+	<K_WHEN> whenExp=Expression() <K_THEN> thenExp=Expression()
 	{
 	   whenThen.setWhenExpression(whenExp);
 	   whenThen.setThenExpression(thenExp);
@@ -1466,19 +1414,36 @@ Function Function():
 	Function retval = new Function();
 	String funcName = null;
 	String tmp = null;
-	ExpressionList expressionList = null;  
+	ExpressionList expressionList = null;
+	Expression expression = null;
 }
 {
-	["{fn" { retval.setEscaped(true); } ]
+	// workaround for "CAST" function with non-standard syntax
+	(( <K_CAST> "(" expression = SimpleExpression() <K_AS> tmp = RelObjectName() ")" {
+		funcName = "CAST";
+		expressionList = new ExpressionList();
+		List expressions = new ArrayList();
+		expressions.add(expression);
+		expressions.add(new StringValue("'"+tmp+"'"));
+	})
+	| ["{fn" { retval.setEscaped(true); } ]
 	(
 	    funcName=RelObjectName()
     	| 
     	// workaround for replace(string) function (name clash with mysql REPLACE expression)
 	    <K_REPLACE> { funcName = "REPLACE"; }
     ) [ "." tmp=RelObjectName() { funcName+= "." + tmp; } ["." tmp=RelObjectName() { funcName+= "." + tmp; }]]
-    "(" [ [<K_DISTINCT> { retval.setDistinct(true); } | <K_ALL> { retval.setAllColumns(true); }] (expressionList=SimpleExpressionList() | "*" { retval.setAllColumns(true); }) ] ")"
+    "(" [ 
+    		[   <K_DISTINCT> { retval.setDistinct(true); } 
+    		  | <K_ALL> { retval.setAllColumns(true); }
+    		] 
+    		(	expressionList=ExpressionList() 
+	    	|   "*" { retval.setAllColumns(true); } 
+	    	)
+    	] ")"
     
     ["}"]
+    )
     { 
 	    retval.setParameters(expressionList);
 	    retval.setName(funcName);

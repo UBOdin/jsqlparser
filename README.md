@@ -9,5 +9,5 @@ A fork of [JSqlParser](http://jsqlparser.sourceforge.net).
 * ... is designed to capture the structure, rather than the semantics of SQL.  For example, explicitly encoding Parenthesis 
       in the SQL AST makes it easier to reproduce the original SQL statement, but much much much harder to work with.
 * ... has numerous confusing inconsistencies.  For example, Boolean operators have inline constructors 
-      (`new AndExpression(lhs,rhs)`), but Arithmetic operators do not (There's no `new Addition(lhs,rhs)``, just 
+      (`new AndExpression(lhs,rhs)`), but Arithmetic operators do not (There's no `new Addition(lhs,rhs)`, just 
       `new Addition()`).

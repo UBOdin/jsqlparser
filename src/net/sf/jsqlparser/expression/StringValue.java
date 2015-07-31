@@ -28,9 +28,13 @@ package net.sf.jsqlparser.expression;
 public class StringValue implements Expression, PrimitiveValue {
 	private String value = "";
 	
-	public StringValue(String escapedValue) {
-		// romoving "'" at the start and at the end 
-		value = escapedValue.substring(1, escapedValue.length() - 1);
+	public StringValue(String value)
+	{
+		this.value = value;
+	}
+
+	public static StringValue parseEscaped(String escapedValue) {
+		return new StringValue(escapedValue.substring(1, escapedValue.length() - 1));
 	}
 	
 	public String getValue() {
@@ -38,15 +42,7 @@ public class StringValue implements Expression, PrimitiveValue {
 	}
 
 	public String getNotExcapedValue() {
-		StringBuffer buffer = new StringBuffer(value);
-		int index = 0;
-		int deletesNum = 0;
-		while ((index = value.indexOf("''", index)) != -1) {
-			buffer.deleteCharAt(index-deletesNum);
-			index+=2;
-			deletesNum++;
-		}
-		return buffer.toString();
+		return value;
 	}
 
 	public void setValue(String string) {

@@ -1881,7 +1881,7 @@ public class CCJSqlParser implements CCJSqlParserConstants {
     case K_ESCAPE:
       jj_consume_token(K_ESCAPE);
       token = jj_consume_token(S_CHAR_LITERAL);
-                                         result.setEscape((new StringValue(token.image)).getValue());
+                                         result.setEscape((StringValue.parseEscaped(token.image)).getValue());
       break;
     default:
       jj_la1[96] = jj_gen;
@@ -2416,7 +2416,7 @@ public class CCJSqlParser implements CCJSqlParserConstants {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S_CHAR_LITERAL:
           token = jj_consume_token(S_CHAR_LITERAL);
-                                   retval = new StringValue(token.image);
+                                   retval = StringValue.parseEscaped(token.image);
           break;
         case 79:
         case 95:

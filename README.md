@@ -11,3 +11,5 @@ A fork of [JSqlParser](http://jsqlparser.sourceforge.net).
 * ... has numerous confusing inconsistencies.  For example, Boolean operators have inline constructors 
       (`new AndExpression(lhs,rhs)`), but Arithmetic operators do not (There's no `new Addition(lhs,rhs)`, just 
       `new Addition()`).
+
+Not all of these issues are fixed yet.

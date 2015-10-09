@@ -1085,6 +1085,23 @@ Expression Between() :
 	}
 }
 
+Expression LikeExpression() :
+{
+	LikeExpression result = new LikeExpression();
+	Expression leftExpression = null;
+	Expression rightExpression = null;
+}
+{
+	leftExpression=SimpleExpression()
+    [<K_NOT> { result.setNot(true); } ] <K_LIKE> rightExpression=SimpleExpression()
+    [<K_ESCAPE> token=<S_CHAR_LITERAL> { result.setEscape((StringValue.parseEscaped(token.image)).getValue()); }]
+	{ 
+		result.setLeftExpression(leftExpression);
+		result.setRightExpression(rightExpression);
+		return result; 
+	}
+}
+
 Expression IsNullExpression():
 {
 	IsNullExpression result = new IsNullExpression();
@@ -1336,7 +1353,9 @@ Expression PrimaryExpression():
 		| LOOKAHEAD(Expression()) retval=Expression() 
 	  ) ")" )
 
-	| token=<S_CHAR_LITERAL> { retval = new StringValue(token.image); }
+	| token=<S_CHAR_LITERAL> { retval = StringValue.parseEscaped(token.image); }
+
+	| [ "+" | "-" { isInverse = true; }] "(" retval=SubSelect() ")"
 	
 	| 	"{d" token=<S_CHAR_LITERAL> "}" { retval = new DateValue(token.image); }
 

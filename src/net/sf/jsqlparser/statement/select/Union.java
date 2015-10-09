@@ -102,7 +102,7 @@ public class Union implements SelectBody {
 		}
 			
 		for (int i = 0; i < plainSelects.size(); i++) {
-			selects += "(" + plainSelects.get(i) + ((i < plainSelects.size() - 1) ? ") UNION " + allDistinct : ")");
+			selects += plainSelects.get(i) + ((i < plainSelects.size() - 1) ? " UNION " + allDistinct : "");
 		}
 
 		return selects + 

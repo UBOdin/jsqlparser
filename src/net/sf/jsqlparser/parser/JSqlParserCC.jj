@@ -1354,8 +1354,6 @@ Expression PrimaryExpression():
 	  ) ")" )
 
 	| token=<S_CHAR_LITERAL> { retval = StringValue.parseEscaped(token.image); }
-
-	| [ "+" | "-" { isInverse = true; }] "(" retval=SubSelect() ")"
 	
 	| 	"{d" token=<S_CHAR_LITERAL> "}" { retval = new DateValue(token.image); }
 

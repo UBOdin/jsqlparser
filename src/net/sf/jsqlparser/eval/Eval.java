@@ -1,5 +1,5 @@
 /**
- * Evaluate an object of Expression type
+ * Evaluate an object of Expression PrimitiveType
  *
  * Based on JSqlParser's Expressions.
  *
@@ -29,32 +29,28 @@ import java.sql.SQLException;
 
 
 public abstract class Eval {
-
-  enum Type { 
-    LONG, DOUBLE, STRING, BOOL, DATE, TIMESTAMP, TIME
-  }
   
-  public Type assertNumeric(Type found)
+  public PrimitiveType assertNumeric(PrimitiveType found)
     throws SQLException
   {
-    if(found != Type.LONG && found != Type.DOUBLE){
-      throw new SQLException("Typecheck Error: Found "+found+
+    if(found != PrimitiveType.LONG && found != PrimitiveType.DOUBLE){
+      throw new SQLException("PrimitiveTypecheck Error: Found "+found+
                              ", but expected a number");
     }
     return found;
   }
   
-  public Type escalateNumeric(Type lhs, Type rhs)
+  public PrimitiveType escalateNumeric(PrimitiveType lhs, PrimitiveType rhs)
     throws SQLException
   {
-    if(lhs == Type.DATE) {
-      if(rhs == Type.DATE) { return Type.DATE; }
+    if(lhs == PrimitiveType.DATE) {
+      if(rhs == PrimitiveType.DATE) { return PrimitiveType.DATE; }
     }
-    if(  (assertNumeric(lhs) == Type.DOUBLE)
-       ||(assertNumeric(rhs) == Type.DOUBLE)){
-      return Type.DOUBLE;
+    if(  (assertNumeric(lhs) == PrimitiveType.DOUBLE)
+       ||(assertNumeric(rhs) == PrimitiveType.DOUBLE)){
+      return PrimitiveType.DOUBLE;
     } else {
-      return Type.LONG;
+      return PrimitiveType.LONG;
     }
   }
   
@@ -72,7 +68,7 @@ public abstract class Eval {
    * The primary interface to Evaluator.  You will need to define 
    * The eval(Column) method to support scoped evaluation.
    *
-   * You may define more Expression types by overriding this method.
+   * You may define more Expression PrimitiveTypes by overriding this method.
    */
   public PrimitiveValue eval(Expression e)
     throws SQLException
@@ -117,16 +113,16 @@ public abstract class Eval {
     throw new SQLException("Invalid operator: "+e);
   }
   
-  public Type getType(PrimitiveValue e)
+  public PrimitiveType getPrimitiveType(PrimitiveValue e)
     throws SQLException
   {
-    if(e instanceof LongValue) { return Type.LONG; }
-    if(e instanceof DoubleValue) { return Type.DOUBLE; }
-    if(e instanceof StringValue) { return Type.STRING; }
-    if(e instanceof DateValue) { return Type.DATE; }
-    if(e instanceof TimeValue) { return Type.TIME; }
-    if(e instanceof TimestampValue) { return Type.TIMESTAMP; }
-    if(e instanceof BooleanValue) { return Type.BOOL; }
+    if(e instanceof LongValue) { return PrimitiveType.LONG; }
+    if(e instanceof DoubleValue) { return PrimitiveType.DOUBLE; }
+    if(e instanceof StringValue) { return PrimitiveType.STRING; }
+    if(e instanceof DateValue) { return PrimitiveType.DATE; }
+    if(e instanceof TimeValue) { return PrimitiveType.TIME; }
+    if(e instanceof TimestampValue) { return PrimitiveType.TIMESTAMP; }
+    if(e instanceof BooleanValue) { return PrimitiveType.BOOL; }
     return null;
   }
   
@@ -139,7 +135,7 @@ public abstract class Eval {
       PrimitiveValue rhs = eval(e.getRightExpression());
       if(lhs == null || rhs == null) return null;
       
-      switch(escalateNumeric(getType(lhs), getType(rhs))){
+      switch(escalateNumeric(getPrimitiveType(lhs), getPrimitiveType(rhs))){
         case DOUBLE:
           return new DoubleValue(op.op(lhs.toDouble(), rhs.toDouble()));
         case LONG:
@@ -150,7 +146,7 @@ public abstract class Eval {
     } catch(PrimitiveValue.InvalidPrimitive ex) { 
       throw new SQLException("Invalid leaf value", ex);
     }
-    throw new SQLException("Invalid type escalation");
+    throw new SQLException("Invalid PrimitiveType escalation");
   }
   public PrimitiveValue cmp(BinaryExpression e, CmpOp op)
     throws SQLException
@@ -161,7 +157,7 @@ public abstract class Eval {
       if(lhs == null || rhs == null) return null;
       boolean ret;
     
-      switch(escalateNumeric(getType(lhs), getType(rhs))){
+      switch(escalateNumeric(getPrimitiveType(lhs), getPrimitiveType(rhs))){
         case DOUBLE:
           ret = op.op(lhs.toDouble(), rhs.toDouble());
           break;
@@ -182,7 +178,7 @@ public abstract class Eval {
           }
           break;
         default: 
-          throw new SQLException("Invalid type escalation");
+          throw new SQLException("Invalid PrimitiveType escalation");
       }
       return ret ? BooleanValue.TRUE : BooleanValue.FALSE;
     } catch(PrimitiveValue.InvalidPrimitive ex) { 

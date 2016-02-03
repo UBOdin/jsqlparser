@@ -22,6 +22,7 @@
  
 package net.sf.jsqlparser.expression;
 
+import net.sf.jsqlparser.schema.PrimitiveType;
 /**
  * Every number without a point or an exponential format is a LongValue
  */
@@ -55,6 +56,8 @@ public class LongValue implements Expression, PrimitiveValue {
 
   public long toLong() { return getValue(); }
   public double toDouble() { return getValue(); }
+  public boolean toBool() throws PrimitiveValue.InvalidPrimitive 
+    { throw new PrimitiveValue.InvalidPrimitive(); }
   
   public boolean equals(Object o){
     if(o instanceof DoubleValue){
@@ -65,4 +68,6 @@ public class LongValue implements Expression, PrimitiveValue {
       return false;
     }
   }
+
+  public PrimitiveType getType() { return PrimitiveType.LONG; }
 }

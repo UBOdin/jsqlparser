@@ -21,6 +21,7 @@
  */
 package net.sf.jsqlparser.expression;
 
+import net.sf.jsqlparser.schema.PrimitiveType;
 
 /**
  * Every number with a point or a exponential format is a DoubleValue
@@ -57,6 +58,8 @@ public class DoubleValue implements Expression, PrimitiveValue {
   public long toLong() throws PrimitiveValue.InvalidPrimitive
   	{ throw new PrimitiveValue.InvalidPrimitive(); }
   public double toDouble() { return getValue(); }
+  public boolean toBool() throws PrimitiveValue.InvalidPrimitive 
+    { throw new PrimitiveValue.InvalidPrimitive(); }
   
   public boolean equals(Object o){
     if(o instanceof DoubleValue){
@@ -68,4 +71,5 @@ public class DoubleValue implements Expression, PrimitiveValue {
     }
   }
   
+  public PrimitiveType getType() { return PrimitiveType.DOUBLE; }
 }

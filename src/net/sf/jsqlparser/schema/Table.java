@@ -35,8 +35,9 @@ public class Table implements FromItem {
 	private String name;
 	private String alias;
 	
-	public Table() {
-	}
+	public Table() { this(null, null); }
+
+	public Table(String name) { this(null, name); }
 
 	public Table(String schemaName, String name) {
 		this.schemaName = schemaName;

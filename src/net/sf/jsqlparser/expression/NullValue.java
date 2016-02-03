@@ -22,6 +22,7 @@
  
 package net.sf.jsqlparser.expression;
 
+import net.sf.jsqlparser.schema.PrimitiveType;
 /**
  *  A "NULL" in a sql statement
  */
@@ -38,9 +39,12 @@ public class NullValue implements Expression, PrimitiveValue {
   	{ throw new PrimitiveValue.InvalidPrimitive(); }
   public double toDouble() throws PrimitiveValue.InvalidPrimitive 
   	{ throw new PrimitiveValue.InvalidPrimitive(); }
+  public boolean toBool() throws PrimitiveValue.InvalidPrimitive 
+    { throw new PrimitiveValue.InvalidPrimitive(); }
 
   public boolean equals(Object o){
     return false;
   }
 
+  public PrimitiveType getType() { return null; }
 }

@@ -23,6 +23,7 @@ package net.sf.jsqlparser.expression;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import net.sf.jsqlparser.schema.PrimitiveType;
 
 
 /**
@@ -66,8 +67,11 @@ public class DateValue implements Expression, PrimitiveValue {
     { throw new PrimitiveValue.InvalidPrimitive(); }
   public double toDouble() throws PrimitiveValue.InvalidPrimitive 
     { throw new PrimitiveValue.InvalidPrimitive(); }
+  public boolean toBool() throws PrimitiveValue.InvalidPrimitive 
+    { throw new PrimitiveValue.InvalidPrimitive(); }
   
-  public boolean equals(Object o){
+  public boolean equals(Object o)
+  {
     try { 
       return value.equals(((DateValue)o).value);
     } catch(ClassCastException e){
@@ -75,4 +79,5 @@ public class DateValue implements Expression, PrimitiveValue {
     }
   }
 
+  public PrimitiveType getType() { return PrimitiveType.DATE; }
 }

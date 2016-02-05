@@ -49,6 +49,7 @@ public class TimestampValue implements Expression, PrimitiveValue {
 		value = d;
 	}
 
+	public String toRawString(){ return value.toString(); }
 	public String toString() {
 		return "{ts '"+value+"'}";
 	}

@@ -51,6 +51,7 @@ public class DoubleValue implements Expression, PrimitiveValue {
 		value = d;
 	}
 
+	public String toRawString(){ return toString(); }
 	public String toString() {
 		return ""+value;
 	}

@@ -54,6 +54,10 @@ public class StringValue implements Expression, PrimitiveValue {
 		expressionVisitor.visit(this);
 	}
 
+	public String toRawString() {
+		return value;
+	}
+
 	public String toString() {
 		return "'"+value+"'";
 	}

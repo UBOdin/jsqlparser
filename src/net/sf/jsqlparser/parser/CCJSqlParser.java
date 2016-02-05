@@ -2237,7 +2237,7 @@ public class CCJSqlParser implements CCJSqlParserConstants {
                   jj_consume_token(100);
                   token = jj_consume_token(S_CHAR_LITERAL);
                   jj_consume_token(101);
-                                                  retval = new DateValue(token.image);
+                                                  retval = DateValue.parseEscaped(token.image);
                   break;
                 case 102:
                   jj_consume_token(102);

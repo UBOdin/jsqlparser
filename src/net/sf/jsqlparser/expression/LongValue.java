@@ -50,6 +50,7 @@ public class LongValue implements Expression, PrimitiveValue {
 		value = d;
 	}
 
+	public String toRawString(){ return toString(); }
 	public String toString() {
 		return ""+value;
 	}

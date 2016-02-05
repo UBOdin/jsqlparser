@@ -43,6 +43,7 @@ public class BooleanValue implements PrimitiveValue, Expression {
   public double toDouble() { return value ? 1.0 : 0.0; }
   public boolean toBool() { return value; }
 
+  public String toRawString(){ return toString(); }
 	public String toString() {
 		return value ? "TRUE" : "FALSE";
 	}

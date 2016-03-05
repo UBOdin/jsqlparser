@@ -93,9 +93,9 @@ public class Column implements Expression {
 	{
 		if(!(o instanceof Column)){ return false; }
 		Column other = (Column)o;
-		if(!columnName.equals(other.columnName)){ return false; }
+		if(!columnName.equalsIgnoreCase(other.columnName)){ return false; }
 		if(table == null || other.table == null){ return true; }
 		if(table.getName() == null || other.table.getName() == null){ return true; }
-		return table.getName().equals(other.table.getName());
+		return table.getName().equalsIgnoreCase(other.table.getName());
 	}
 }

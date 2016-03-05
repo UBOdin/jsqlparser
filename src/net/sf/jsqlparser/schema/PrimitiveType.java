@@ -6,7 +6,9 @@ import net.sf.jsqlparser.expression.*;
 public enum PrimitiveType { 
 	LONG, DOUBLE, STRING, BOOL, DATE, TIMESTAMP, TIME;
 
-	public static PrimitiveType fromString(String in){
+	public static PrimitiveType fromString(String in)
+		throws SQLException
+	{
 		switch(in.toUpperCase())
 		{
 			case "VARCHAR":
@@ -15,6 +17,7 @@ public enum PrimitiveType {
 				return STRING;
 			case "LONG":
 			case "INTEGER":
+			case "INT":
 				return LONG;
 			case "DOUBLE":
 			case "FLOAT":
@@ -30,7 +33,7 @@ public enum PrimitiveType {
 			case "TIMESTAMP":
 				return TIMESTAMP;
 		}
-		return null;
+		throw new SQLException("Unknown Type: '"+in.toUpperCase()+"'");
 	}
 
 }

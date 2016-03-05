@@ -33,8 +33,12 @@ public class DateValue implements Expression, PrimitiveValue {
 	private Date value;
 	
 	public DateValue(String value) {
-		this.value = Date.valueOf(value.substring(1, value.length()-1));
+		this.value = Date.valueOf(value);
 	}
+
+  public static DateValue parseEscaped(String escapedValue) {
+    return new DateValue(escapedValue.substring(1, escapedValue.length()-1));
+  }
 	
 	public void accept(ExpressionVisitor expressionVisitor) {
 		expressionVisitor.visit(this);
@@ -58,6 +62,7 @@ public class DateValue implements Expression, PrimitiveValue {
 		value = d;
 	}
   
+  public String toRawString(){ return toString(); }
   public String toString()
   {
     return value.toString();

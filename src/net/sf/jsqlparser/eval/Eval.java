@@ -455,7 +455,7 @@ if(lhs == null || rhs == null) return null;
       if(args.size() != 1){
         throw new SQLException("DATE() takes exactly one argument");
       }
-      return new DateValue(eval((Expression)args.get(0)).toString());
+      return new DateValue(eval((Expression)args.get(0)).toRawString());
     }
     
     return missing("Function:"+fn);

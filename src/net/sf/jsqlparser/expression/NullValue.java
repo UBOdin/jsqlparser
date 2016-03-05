@@ -31,6 +31,7 @@ public class NullValue implements Expression, PrimitiveValue {
 		expressionVisitor.visit(this);
 	}
 
+  public String toRawString(){ return ""; }
 	public String toString() {
 		return "NULL";
 	}

@@ -13,3 +13,7 @@ A fork of [JSqlParser](http://jsqlparser.sourceforge.net).
       `new Addition()`).
 
 Not all of these issues are fixed yet.
+
+### Documentation
+
+JavaDoc for JSQLParser can be found [here](http://odin.cse.buffalo.edu/software/jsqlparser/)

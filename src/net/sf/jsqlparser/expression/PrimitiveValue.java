@@ -8,7 +8,7 @@ import net.sf.jsqlparser.schema.PrimitiveType;
  * A terminal expression that can not be evaluated further (e.g., a Number or String)
  */
 
-public interface PrimitiveValue extends Serializable {
+public interface PrimitiveValue extends Serializable, Expression {
   
   public class InvalidPrimitive extends SQLException {}
   

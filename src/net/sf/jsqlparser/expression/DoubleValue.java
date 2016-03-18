@@ -71,6 +71,9 @@ public class DoubleValue implements Expression, PrimitiveValue {
       return false;
     }
   }
+  public int hashCode(){
+    return new Double(value).hashCode();
+  }
   
   public PrimitiveType getType() { return PrimitiveType.DOUBLE; }
 }

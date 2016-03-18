@@ -69,6 +69,9 @@ public class LongValue implements Expression, PrimitiveValue {
       return false;
     }
   }
+  public int hashCode(){
+    return new Long(value).hashCode();
+  }
 
   public PrimitiveType getType() { return PrimitiveType.LONG; }
 }

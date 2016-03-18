@@ -46,6 +46,9 @@ public class NullValue implements Expression, PrimitiveValue {
   public boolean equals(Object o){
     return false;
   }
+  public int hashCode(){
+    return 0;
+  }
 
   public PrimitiveType getType() { return null; }
 }

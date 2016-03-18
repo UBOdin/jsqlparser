@@ -67,6 +67,9 @@ public class TimeValue implements Expression, PrimitiveValue {
       return false;
     }
   }
+  public int hashCode(){
+    return value.hashCode();
+  }
 
   public PrimitiveType getType() { return PrimitiveType.TIME; }
 }

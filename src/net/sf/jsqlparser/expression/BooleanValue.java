@@ -55,6 +55,9 @@ public class BooleanValue implements PrimitiveValue, Expression {
       return false;
     }
   }
+  public int hashCode(){
+    return value ? 1 : 0;
+  }
 
   public void accept(ExpressionVisitor visitor) { visitor.visit(this); }
 

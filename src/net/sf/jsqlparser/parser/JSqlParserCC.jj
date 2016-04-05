@@ -23,6 +23,7 @@
 options{
     IGNORE_CASE=true ;
     STATIC=false;
+//  DEBUG_PARSER=true;
 //  DEBUG_LOOKAHEAD= true ;
 //  FORCE_LA_CHECK=true;
 //  DEBUG_TOKEN_MANAGER=true;
@@ -551,9 +552,9 @@ PlainSelect PlainSelect():
     
      // TODO
     [IntoClause()]
-    <K_FROM>
+    [<K_FROM>
     fromItem=FromItem()
-    joins=JoinsList()
+    joins=JoinsList()]
     [ where=WhereClause() { plainSelect.setWhere(where); }]
     [ groupByColumnReferences=GroupByColumnReferences() { plainSelect.setGroupByColumnReferences(groupByColumnReferences); }]
     [ having=Having() { plainSelect.setHaving(having); }]
@@ -563,8 +564,10 @@ PlainSelect PlainSelect():
 	{ 
 		plainSelect.setSelectItems(selectItems);
 		plainSelect.setFromItem(fromItem);
-		if (joins.size() > 0)
-			plainSelect.setJoins(joins);
+		if(joins != null) {
+			if (joins.size() > 0)
+				plainSelect.setJoins(joins);
+		}
 		return plainSelect; 
 	}
 }

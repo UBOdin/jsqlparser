@@ -56,7 +56,7 @@ public abstract class BinaryExpression implements Expression {
 	}
 
 	public String toString() {
-		return getLeftExpression()+" "+getStringExpression()+" "+getRightExpression();
+		return "("+getLeftExpression()+" "+getStringExpression()+" "+getRightExpression()+")";
 	}
 
 	public abstract String getStringExpression();

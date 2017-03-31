@@ -8,8 +8,6 @@
       <property name="build.compiler"     value="modern"/>
       <property name="build.dir"          value="./classes" />
       <property name="src.dir"            value="./src"/>
-      <property name="test.build.dir"          value="./testclasses" />
-      <property name="test.src.dir"            value="./testsrc"/>
       <property name="junit.jar"            value="./lib/junit.jar"/>
       <property name="parser.dir"            value="${src.dir}/net/sf/jsqlparser/parser"/>
       <property name="jar.file"              value="jsqlparser"/>
@@ -18,22 +16,14 @@
 	<path id="project.class.path">
 	    <pathelement path="${build.dir}"/>
 	</path>
-
-	<path id="testproject.class.path">
-		<path refid="project.class.path" />
-	    <pathelement path="${test.build.dir}" />
-	    <pathelement path="${junit.jar}" />
-	</path>
   
       <target name="clean">
           <delete dir="${build.dir}" includeEmptyDirs="true" />
-          <delete dir="${test.build.dir}" includeEmptyDirs="true" />
       </target>
   
 	  
       <target name="prep">
           <mkdir dir="${build.dir}"/>
-          <mkdir dir="${test.build.dir}"/>
       </target>
 
       <target name="javacc">
@@ -60,24 +50,6 @@
         </javac>
       </target>
   
-      <target name="test">
-  		 <junit  haltonfailure="yes">
-	  		<classpath refid="testproject.class.path"/>
-	  		<formatter type="plain" usefile="false"/>
-			<test name="net.sf.jsqlparser.test.tablesfinder.TablesNamesFinderTest"/>
-			<test name="net.sf.jsqlparser.test.simpleparsing.CCJSqlParserManagerTest"/>
-			<test name="net.sf.jsqlparser.test.select.SelectTest"/>
-			<test name="net.sf.jsqlparser.test.delete.DeleteTest"/>
-			<test name="net.sf.jsqlparser.test.insert.InsertTest"/>
-			<test name="net.sf.jsqlparser.test.replace.ReplaceTest"/>
-			<test name="net.sf.jsqlparser.test.update.UpdateTest"/>
-			<test name="net.sf.jsqlparser.test.create.CreateTableTest"/>
-			<test name="net.sf.jsqlparser.test.drop.DropTest"/>
-			<test name="net.sf.jsqlparser.test.truncate.TruncateTest"/>
-			<test name="net.sf.jsqlparser.test.select.SpeedTest"/>
-		</junit>
-      </target>
-  
       <target name="jar" depends="compile">
 	     <delete file="${binjar.file.name}"  />
 		 <jar destfile="${binjar.file.name}" > 
@@ -91,7 +63,7 @@
             splitindex="true" author="true" version="true" 
             nodeprecatedlist="false" nodeprecated="false"
             packagenames="net.sf.jsqlparser.*"
-            classpath="testclasses;classes;./testlib/junit.jar" 
+            classpath="classes" 
             verbose="No"
             additionalparam="-tag to.do:a:&quot;To Do:&quot;">
           <fileset dir="src">

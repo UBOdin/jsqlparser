@@ -13,6 +13,8 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 public class CreateTable implements Statement {
 
     private Table table;
+    private boolean tableIfNotExists = false;
+    private boolean orReplaceTable = false;
     private List<String> tableOptionsStrings;
     private List<ColumnDefinition> columnDefinitions;
     private List<Index> indexes;
@@ -32,6 +34,32 @@ public class CreateTable implements Statement {
 
     public void setTable(Table table) {
         this.table = table;
+    }
+    
+    /**
+     * Table if not exists  
+     *
+     * @return The table if not exists
+     */
+    public boolean getTableIfNotExists() {
+        return tableIfNotExists;
+    }
+
+    public void setTableIfNotExists(boolean tableIfNotExists) {
+        this.tableIfNotExists = tableIfNotExists;
+    }
+    
+    /**
+     * Replace Table if exists 
+     *
+     * @return The or replace table 
+     */
+    public boolean getOrReplaceTable() {
+        return orReplaceTable;
+    }
+
+    public void setOrReplaceTable(boolean orReplaceTable) {
+        this.orReplaceTable = orReplaceTable;
     }
 
     /**
@@ -76,8 +104,10 @@ public class CreateTable implements Statement {
 
     public String toString() {
         String sql = "";
-
-        sql = "CREATE TABLE " + table + " (";
+        String ifNotExistsStr = this.tableIfNotExists ? "IF NOT EXISTS " : "";
+        String orReplaceStr = this.orReplaceTable ? "DROP TABLE " + table + ";\n" : "";
+        sql += orReplaceStr;
+        sql += "CREATE TABLE " + ifNotExistsStr + table + " (";
 
         sql += PlainSelect.getStringList(columnDefinitions, true, false);
         if (indexes != null && indexes.size() != 0) {

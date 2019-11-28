@@ -1,3 +1,10 @@
+**UBOdin's fork of JSQLParser is no longer under active development, and has been replaced by [Sparsity](https://github.com/UBOdin/sparsity)**
+
+It also appears that JSQLParser is in active development [On GitHub](https://github.com/JSQLParser/JSqlParser)
+
+------
+
+
 # JSqlParser
 
 A fork of [JSqlParser](http://jsqlparser.sourceforge.net).  
